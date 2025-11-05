@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- 🔸 Banner Carousel -->
+<div id="bannerCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+  <div class="carousel-inner rounded-4 shadow">
+    <div class="carousel-item active">
+      <img src="{% static 'images/b1.jpg' %}" class="d-block w-100" alt="Banner 1">
+      <div class="carousel-caption d-none d-md-block">
+        <h3>Sale is Live Now 🔥</h3>
+        <p>Get 10% off on all electronics</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'images/b2.jpg' %}" class="d-block w-100" alt="Banner 2">
+      <div class="carousel-caption d-none d-md-block">
+        <h3>Fashion Fest 👕</h3>
+        <p>Flat 30% Off on all T-shirts</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'images/b3.jpg' %}" class="d-block w-100" alt="Banner 3">
+      <div class="carousel-caption d-none d-md-block">
+        <h3>Festive Offers 🎉</h3>
+        <p>Buy 1 Get 1 on Home Decor</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'images/b4.jpg' %}" class="d-block w-100" alt="Banner 4">
+      <div class="carousel-caption d-none d-md-block">
+        <h3>Village Style Specials 🌾</h3>
+        <p>Exclusive Local Products</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+<!-- 🔸 Jewellery Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-4">💍 Mamata Jewells Collection 💍</h2>
+    <div class="row">
+      {% for item in jewellery_products %}
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-sm border-0 rounded-4">
+          {% if item.image %}
+          <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+          {% endif %}
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ item.name }}</h5>
+            <p class="fw-bold text-success">₹{{ item.price }}</p>
+            <a href="{% url 'mamatajwells:detail' item.id %}" class="btn btn-outline-warning btn-sm">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-muted">No jewellery items available yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 🔸 Market Products Section -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">🛒 Market Products 🛒</h2>
+    <div class="row">
+      {% for product in market_products %}
+      <div class="col-md-3 mb-4">
+        <div class="card shadow-sm border-0 rounded-4">
+          {% if product.image %}
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+          {% endif %}
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="fw-bold text-primary">₹{{ product.price }}</p>
+            <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary btn-sm">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-muted">No market products available yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

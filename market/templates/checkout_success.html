@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+  <h2 class="text-success mb-3">🎉 Order Placed Successfully!</h2>
+  <p>Payment Method: {{ checkout.payment_method|upper }}</p>
+  <p>Village: {{ checkout.village }}</p>
+  <p>Landmark: {{ checkout.landmark }}</p>
+  <h4>Total Paid: ₹{{ checkout.total|floatformat:2 }}</h4>
+  <a href="{% url 'products' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+from django.urls import path
+from market.views import *
+
+
+urlpatterns = [
+    path('', home, name='home'),
+    path('signup/', signup_view, name='signup'),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('products/', product_list, name='products'), 
+    path('about/', about_view, name='about'),
+    path('contact/', contact_view, name='contact'),
+    path('profile/', profile_view, name='profile'),
+    path('add-to-cart/<int:product_id>/<str:product_type>/', add_to_cart, name='add_to_cart'),
+    path('cart/', cart_view, name='cart_view'),
+    path('cart/update/<int:cart_item_id>/', update_cart, name='update_cart'),
+    path('cart/remove/<int:cart_item_id>/', remove_from_cart, name='remove_from_cart'),
+    path('checkout/', checkout_view, name='checkout'),
+    path('products/<int:pk>/', product_detail, name='product_detail'),
+    path('checkout/', checkout_view, name='checkout'),
+    path('checkout/success/', checkout_success, name='checkout_success'),
+]
+
+

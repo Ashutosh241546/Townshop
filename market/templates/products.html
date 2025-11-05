@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Products{% endblock %}
+
+{% block content %}
+
+<!-- Interactive Marquee Heading -->
+<div class="bg-dark text-white py-2 mb-4 rounded-3 shadow-sm">
+    <marquee behavior="scroll" direction="left" scrollamount="6" style="font-size:1.2rem; font-weight:bold; color:#FFD700;">
+        🔥 Check Out Our Trending Products! Shop Now & Get Exclusive Deals! ✨
+    </marquee>
+</div>
+
+<h2 class="text-center mb-4 fw-bold" 
+    style="color: #000; text-shadow: 0 0 8px rgba(255,215,0,0.3);">
+    🔥 Trending Products
+</h2>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow border-0 rounded-4" 
+             style="overflow:hidden; height: 320px; width: 100%; max-width: 280px; margin:auto; background-color: #f9f9f9;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" 
+                     class="card-img-top rounded-top-4" 
+                     alt="{{ product.name }}" 
+                     style="height: 200px; width: 100%; object-fit: cover; border-bottom: 2px solid #eee;">
+            {% else %}
+                <img src="https://via.placeholder.com/280x200" 
+                     class="card-img-top rounded-top-4" 
+                     alt="No Image"
+                     style="height: 200px; width: 100%; object-fit: cover; border-bottom: 2px solid #eee;">
+            {% endif %}
+            <div class="card-body text-center p-2">
+                <h5 class="card-title mb-1">
+                    <a href="{% url 'product_detail' product.id %}" style="text-decoration:none; color:#000;">
+                        {{ product.name }}
+                    </a>
+                </h5>
+                <p class="card-text text-muted small mb-1">{{ product.description|truncatechars:40 }}</p>
+                <h6 class="fw-bold mb-2">₹{{ product.price }}</h6>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-dark">Buy Now</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if products|length == 0 %}
+    <div class="text-center text-white">No products available yet.</div>
+{% endif %}
+{% endblock %}

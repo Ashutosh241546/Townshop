@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center mb-4">🧾 Checkout</h2>
+
+  <div class="row g-4">
+    <!-- Cart Summary -->
+    <div class="col-md-7">
+      <div class="card p-4 shadow-sm">
+        <h4 class="mb-3">🛍️ Cart Summary</h4>
+        <table class="table align-middle text-center">
+          <thead>
+            <tr>
+              <th>Sr. No</th>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Price (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart_items %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ item.product_name }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>₹{{ item.price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="text-end mt-2">
+          <h5>Subtotal: ₹{{ subtotal|floatformat:2 }}</h5>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delivery & Payment -->
+    <div class="col-md-5">
+      <div class="card p-4 shadow-sm">
+        <h4 class="mb-3">🚚 Delivery Details</h4>
+        <form method="POST">
+          {% csrf_token %}
+          <label class="form-label">Select Village:</label>
+          <select name="village" id="village" class="form-select mb-3" required>
+            <option value="">-- Choose Village --</option>
+            {% for v, charge in villages.items %}
+            <option value="{{ v }}">{{ v }} (₹{{ charge }} delivery)</option>
+            {% endfor %}
+          </select>
+
+          <label class="form-label">Nearby Famous Place:</label>
+          <input type="text" name="landmark" class="form-control mb-3" placeholder="e.g. Near Hanuman Temple" required>
+
+          <label class="form-label">Payment Method:</label>
+          <select name="payment_method" class="form-select mb-3">
+            <option value="cod">Cash on Delivery</option>
+          </select>
+
+          <div class="mb-3">
+            <h5>Delivery Charge: ₹<span id="deliveryCharge">0</span></h5>
+            <h4>Total: ₹<span id="total">{{ subtotal|floatformat:2 }}</span></h4>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100">Confirm Order ✅</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const villageSelect = document.getElementById('village');
+  const deliveryChargeEl = document.getElementById('deliveryCharge');
+  const totalEl = document.getElementById('total');
+  const subtotal = {{ subtotal|floatformat:2 }};
+
+  const deliveryCharges = {
+    {% for v, charge in villages.items %}
+    "{{ v }}": {{ charge }},
+    {% endfor %}
+  };
+
+  villageSelect.addEventListener('change', function() {
+    const charge = deliveryCharges[this.value] || 0;
+    deliveryChargeEl.textContent = charge;
+    totalEl.textContent = (subtotal + charge).toFixed(2);
+  });
+</script>
+{% endblock %}
