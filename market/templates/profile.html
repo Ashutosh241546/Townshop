@@ -20,9 +20,12 @@
   .profile-pic {
     border: 4px solid #007bff;
     transition: 0.3s;
-  }
-  .profile-pic:hover {
-    transform: scale(1.05);
+    background: #007bff;
+    color: white;
+    font-size: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   label {
     font-weight: 500;
@@ -35,11 +38,41 @@
   .btn-save:hover {
     opacity: 0.9;
   }
+  /* Order history styling */
+  .order-history {
+    max-width: 900px;
+    margin: 50px auto;
+  }
+  .order-card {
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    background: white;
+    padding: 20px;
+    transition: transform 0.2s;
+  }
+  .order-card:hover {
+    transform: scale(1.01);
+  }
+  .view-more {
+    display: block;
+    width: fit-content;
+    margin: 20px auto 0;
+    padding: 8px 20px;
+    background: linear-gradient(45deg, #007bff, #00bcd4);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+  .view-more:hover {
+    opacity: 0.9;
+  }
 </style>
 
 <div class="container mt-5 mb-5">
   <h2 class="text-center mb-4 fw-bold text-primary">👤 My Profile</h2>
 
+  <!-- Profile Form -->
   <form method="POST" enctype="multipart/form-data" class="profile-card p-4">
     {% csrf_token %}
 
@@ -49,8 +82,9 @@
         <img src="{{ form.instance.profile_image.url }}" alt="Profile Image"
              class="rounded-circle profile-pic" width="130" height="130">
       {% else %}
-        <img src="{% static 'images/default.png' %}" alt="Default Profile"
-             class="rounded-circle profile-pic" width="130" height="130">
+        <div class="rounded-circle profile-pic mx-auto" style="width:130px; height:130px;">
+          {{ request.user.username|first|upper }}
+        </div>
       {% endif %}
     </div>
 
@@ -97,5 +131,32 @@
       💾 Save Changes
     </button>
   </form>
+</div>
+
+<!-- Order History Section -->
+<div class="order-history">
+  <h3 class="text-center text-primary fw-bold mb-4">📦 My Order History</h3>
+
+  {% if orders %}
+    {% for order in orders %}
+      <div class="order-card mb-4">
+        <h5>Order #{{ order.id }}</h5>
+        <p><strong>Date:</strong> {{ order.created_at|date:"d M, Y h:i A" }}</p>
+        <p><strong>Village:</strong> {{ order.village }}</p>
+        <p><strong>Nearby Place:</strong> {{ order.nearby_place|default:"-" }}</p>
+        <p><strong>Total:</strong> ₹{{ order.total_price }}</p>
+
+        <h6 class="text-secondary mt-3">Items:</h6>
+        <ul>
+          {% for item in order.items.all %}
+            <li>{{ item.product_name }} ({{ item.quantity }} × ₹{{ item.price }})</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+    <a href="{% url 'order_history' %}" class="view-more">🔍 View More</a>
+  {% else %}
+    <p class="text-center text-muted">No previous orders found.</p>
+  {% endif %}
 </div>
 {% endblock %}

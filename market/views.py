@@ -89,6 +89,7 @@ def contact_view(request):
 @login_required
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
@@ -101,7 +102,7 @@ def profile_view(request):
             'full_name': profile.full_name or request.user.get_full_name(),
         })
 
-    return render(request, 'profile.html', {'form': form})
+    return render(request, 'profile.html', {'form': form,"orders":orders,"profile":profile})
 
 
 # def profile_view(request):
@@ -185,6 +186,10 @@ def product_detail(request, pk):
     })
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import CartItem, Order, OrderItem
+
 @login_required
 def checkout_view(request):
     cart_items = CartItem.objects.filter(user=request.user)
@@ -211,24 +216,49 @@ def checkout_view(request):
         payment_method = request.POST.get('payment_method', 'cod')
 
         delivery_charge = villages.get(village, 0)
+        total_price = subtotal + delivery_charge
 
-        # Convert Decimal to float for session
+        # 🧾 1️⃣ Create and save the Order
+        order = Order.objects.create(
+            user=request.user,
+            village=village,
+            nearby_place=landmark,
+            total_price=total_price
+        )
+
+        # 🛒 2️⃣ Create OrderItems from CartItems
+        for item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product_name=item.product_name,
+                product_type=getattr(item.product_name, 'product_type', 'market'),
+                price=item.price,
+                quantity=item.quantity
+            )
+
+        # 🧹 3️⃣ Clear user cart after checkout
+        cart_items.delete()
+
+        # 💾 4️⃣ (Optional) Store order info in session
         request.session['checkout'] = {
+            'order_id': order.id,
             'subtotal': float(subtotal),
             'delivery_charge': float(delivery_charge),
-            'total': float(subtotal + delivery_charge),
+            'total': float(total_price),
             'village': village,
             'landmark': landmark,
             'payment_method': payment_method
         }
 
-        return redirect('checkout_success')  # success page URL name
+        # ✅ Redirect to success page or profile
+        return redirect('/checkout/success/')  # or 'checkout_success'
 
     return render(request, 'checkout.html', {
         'cart_items': cart_items,
         'subtotal': subtotal,
         'villages': villages
     })
+
 
 @login_required
 def checkout_success(request):
@@ -246,6 +276,55 @@ def checkout_success(request):
 
 
 
+ 
+ 
+
+@login_required
+def place_order(request):
+    user = request.user
+    cart_items = CartItem.objects.filter(user=user)
+
+    if not cart_items.exists():
+        return redirect('cart')  # No items to order
+
+    # 1️⃣ Calculate total price
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
+
+    # 2️⃣ Create order
+    print('create')
+    order = Order.objects.create(
+        user=user,
+        village=request.POST.get('village'),
+        nearby_place=request.POST.get('nearby_place', ''),
+        total_price=total_price,
+    )
+
+    # 3️⃣ Create order items
+    print('order')
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product_name=item.product_name,
+            product_type=item.product_type,  # if available
+            price=item.price,
+            quantity=item.quantity
+        )
+
+    # 4️⃣ Clear cart after placing order
+    cart_items.delete()
+
+    return redirect('order_success', order_id=order.id)
+
+
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'order_history.html', {'orders': orders})
+
+
+
+def order_detail(request):
+    pass
 
 
 

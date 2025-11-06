@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4"></div>  <!-- Empty left column to push history to the right -->
+    <div class="col-md-8">  <!-- Order history on the right -->
+      <h4>All Order History</h4>
+      <hr>
+      {% if orders %}
+        {% for order in orders %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <strong>Order #{{ order.id }}</strong><br>
+              Total: ₹{{ order.total_price }}<br>
+              Date: {{ order.created_at|date:"d M Y, H:i" }}
+              <hr>
+              <ul>
+                {% for item in order.items.all %}
+                  <li>{{ item.product_name }} (x{{ item.quantity }}) — ₹{{ item.price }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No order history available.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

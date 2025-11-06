@@ -19,6 +19,9 @@ urlpatterns = [
     path('products/<int:pk>/', product_detail, name='product_detail'),
     path('checkout/', checkout_view, name='checkout'),
     path('checkout/success/', checkout_success, name='checkout_success'),
+    path('order-history/', order_history, name='order_history'),
+    path('order_detail/', order_detail, name='order_detail'),
+    path('place_order/', place_order, name='place_order'),
 ]
 
 
