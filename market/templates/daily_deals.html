@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🔥 Daily Deals | Mamata Jwells & Product Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="card bg-danger text-white mb-5 rounded-4 shadow-sm">
+        <div class="card-body p-4 text-center">
+            <h1 class="fw-bold">🔥 Daily Deals</h1>
+            <p class="lead">Grab the best offers before time runs out!</p>
+            <div class="countdown d-flex justify-content-center mt-3">
+                <div class="mx-2 text-center">
+                    <div class="time-box bg-white text-danger rounded p-2"><span id="hours">12</span></div>
+                    <small>Hours</small>
+                </div>
+                <div class="mx-2 text-center">
+                    <div class="time-box bg-white text-danger rounded p-2"><span id="minutes">45</span></div>
+                    <small>Minutes</small>
+                </div>
+                <div class="mx-2 text-center">
+                    <div class="time-box bg-white text-danger rounded p-2"><span id="seconds">30</span></div>
+                    <small>Seconds</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mamata Jwells Deals -->
+    <div class="mb-5">
+        <h2 class="fw-bold text-danger mb-4">💎 Mamata Jwells Special Offers</h2>
+        <div class="row">
+            {% for item in mamata_deals %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card border-0 shadow-sm deal-card">
+                    <div class="deal-badge">-{{ item.discount_percentage }}%</div>
+                    <a href="{% url 'mamatajwells:detail' item.pk %}" class="text-decoration-none text-dark">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200" class="card-img-top" style="height:200px; object-fit:cover;">
+                        {% endif %}
+                    </a>
+                    <div class="card-body text-center">
+                        <h6>{{ item.name|truncatewords:3 }}</h6>
+                        <p class="mb-1 text-muted small">{{ item.description|truncatechars:40 }}</p>
+                        <div>
+                            <span class="fw-bold text-danger">₹{{ item.discounted_price }}</span>
+                            <small class="text-muted"><del>₹{{ item.price }}</del></small>
+                        </div>
+                        {% if user.is_authenticated %}
+                        <form method="POST" action="{% url 'add_to_cart' item.id 'mamata' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger mt-2">Add to Cart</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No jewellery deals available now.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Product Store Deals -->
+    <div>
+        <h2 class="fw-bold text-primary mb-4">🛍️ Product Store Flash Sale</h2>
+        <div class="row">
+            {% for product in store_deals %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card border-0 shadow-sm deal-card">
+                    <div class="deal-badge bg-primary">Save {{ product.discount_percentage }}%</div>
+                    <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                        {% else %}
+                        <img src="https://via.placeholder.com/300x200" class="card-img-top" style="height:200px; object-fit:cover;">
+                        {% endif %}
+                    </a>
+                    <div class="card-body text-center">
+                        <h6>{{ product.name|truncatewords:3 }}</h6>
+                        <p class="mb-1 text-muted small">{{ product.description|truncatechars:40 }}</p>
+                        <div>
+                            <span class="fw-bold text-primary">₹{{ product.discounted_price }}</span>
+                            <small class="text-muted"><del>₹{{ product.price }}</del></small>
+                        </div>
+                        {% if user.is_authenticated %}
+                        <form method="POST" action="{% url 'add_to_cart' product.id 'market' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-primary mt-2">Add to Cart</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No flash deals available now.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.deal-card {
+    position: relative;
+    transition: transform 0.3s ease;
+    border-radius: 10px;
+}
+.deal-card:hover {
+    transform: translateY(-5px);
+}
+.deal-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #dc3545;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.time-box {
+    min-width: 40px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 150px !important;
+    }
+    .display-5 {
+        font-size: 1.8rem;
+    }
+}
+</style>
+
+<script>
+function updateCountdown() {
+    const now = new Date();
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+    const diff = endOfDay - now;
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+</script>
+{% endblock %}

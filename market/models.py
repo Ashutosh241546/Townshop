@@ -1,6 +1,34 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# class Product(models.Model):
+#     name = models.CharField(max_length=200)
+#     description = models.TextField(blank=True)
+#     price = models.DecimalField(max_digits=8, decimal_places=2)
+#     image = models.ImageField(upload_to='products/', blank=True, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return self.name
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    type = models.CharField(max_length=20, choices=[
+        ('market', 'Market'),
+        ('jwells', 'Mamata Jewells')
+    ])
+
+    def __str__(self):
+        return f"{self.name} ({self.type})"
+    
+class SubCategory(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="subcategories")
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.name} → {self.category.name}"
+ 
 class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -8,8 +36,34 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # 🔥 New Fields for Category & Type
+    product_type = models.CharField(
+        max_length=20,
+        choices=[
+            ('market', 'Market'),
+            ('jwells', 'Mamata Jewells')
+        ],
+        default='market'
+    )
+
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    subcategory = models.ForeignKey(
+        'SubCategory',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products"
+    )
+
     def __str__(self):
         return self.name
+
+    
     
 
 class Profile(models.Model):
@@ -57,6 +111,6 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.product_name} (x{self.quantity})"
     
-    
+
 
 

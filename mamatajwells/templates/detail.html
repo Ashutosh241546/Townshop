@@ -3,60 +3,75 @@
 {% block title %}{{ item.name }}{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-  <div class="row">
-    <!-- Product Image -->
-    <div class="col-md-6 mb-4 text-center">
+<div class="container my-4">
+  <div class="row align-items-center">
+    <!-- 🖼️ Product Image -->
+    <div class="col-12 col-md-6 mb-4 text-center">
       {% if item.image %}
-        <img src="{{ item.image.url }}" class="img-fluid rounded-4 shadow" style="object-fit:cover; max-height:300px; width:auto;">
+        <img src="{{ item.image.url }}" 
+             class="img-fluid rounded-4 shadow-sm" 
+             style="object-fit:cover; max-height:280px; width:100%; max-width:350px;">
       {% else %}
-        <img src="https://via.placeholder.com/300x300" class="img-fluid rounded-4 shadow">
+        <img src="https://via.placeholder.com/300x300" 
+             class="img-fluid rounded-4 shadow-sm">
       {% endif %}
     </div>
 
-    <!-- Product Info -->
-    <div class="col-md-6">
-      <h2 class="fw-bold">{{ item.name }}</h2>
-      <p class="text-muted">{{ item.description }}</p>
-      <p class="small text-secondary">Category: {{ item.get_category_display|default:"General" }}</p>
-      <h4 class="text-dark mt-2">₹{{ item.price }}</h4>
+    <!-- 📝 Product Info -->
+    <div class="col-12 col-md-6 text-center text-md-start">
+      <h4 class="fw-bold">{{ item.name }}</h4>
+      <p class="text-muted small">{{ item.description }}</p>
+      <p class="text-secondary small mb-1">
+        Category: {{ item.get_category_display|default:"General" }}
+      </p>
+      <h4 class="text-dark fw-semibold mt-2 mb-3">₹{{ item.price }}</h4>
 
-      <!-- Add to Cart & Call -->
-      <div class="mt-3 d-flex align-items-center">
-        <a href="{% url 'add_to_cart' item.id 'mamata' %}" class="btn btn-dark me-2">Add to Cart 🛒</a>
-        <a href="tel:9945678990" class="btn btn-outline-primary">Call to Order 📞</a>
+      <!-- 🛒 Buttons -->
+      <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-md-start">
+        <a href="{% url 'add_to_cart' item.id 'mamata' %}" 
+           class="btn btn-dark me-sm-2 mb-2 mb-sm-0 px-3 py-1">
+          Add to Cart 🛒
+        </a>
+        <a href="tel:9945678990" 
+           class="btn btn-outline-primary px-3 py-1">
+          Call 📞
+        </a>
       </div>
 
-      <!-- Extra Info -->
-      <p class="text-muted mt-3 small">
+      <!-- 🛍️ Info -->
+      <p class="text-muted mt-3 small text-center text-md-start">
         Free shipping on orders above ₹500. Easy returns within 7 days.
       </p>
     </div>
   </div>
 
-  <!-- Related Products -->
+  <!-- 💎 Related Products -->
   <div class="mt-5">
-    <h4 class="fw-bold mb-3">You may also like</h4>
-    <div class="row">
+    <h5 class="fw-bold mb-3 text-center text-md-start">You may also like</h5>
+    <div class="row justify-content-center">
       {% for p in featured %}
         {% if p.id != item.id %}
-        <div class="col-md-3 mb-3">
-          <div class="card rounded-3 shadow-sm" style="overflow:hidden;">
+        <div class="col-6 col-sm-4 col-md-3 mb-3 d-flex justify-content-center">
+          <div class="card rounded-3 shadow-sm" style="width:100%; max-width:170px;">
             {% if p.image %}
-              <img src="{{ p.image.url }}" class="card-img-top" style="height:160px; object-fit:cover;">
+              <img src="{{ p.image.url }}" class="card-img-top" style="height:130px; object-fit:cover;">
             {% else %}
-              <img src="https://via.placeholder.com/300x160" class="card-img-top" style="height:160px; object-fit:cover;">
+              <img src="https://via.placeholder.com/170x130" class="card-img-top" style="height:130px; object-fit:cover;">
             {% endif %}
             <div class="card-body text-center p-2">
-              <h6 class="mb-1">{{ p.name }}</h6>
+              <h6 class="mb-1 small fw-semibold">{{ p.name }}</h6>
               <p class="mb-1 small text-muted">₹{{ p.price }}</p>
-              <a href="{% url 'mamatajwells:detail' p.id %}" class="btn btn-sm btn-dark">View</a>
+              <a href="{% url 'mamatajwells:detail' p.id %}" 
+                 class="btn btn-sm btn-dark px-2 py-1" 
+                 style="font-size:0.8rem;">
+                View
+              </a>
             </div>
           </div>
         </div>
         {% endif %}
       {% empty %}
-        <p class="text-muted">No related items found.</p>
+        <p class="text-muted text-center">No related items found.</p>
       {% endfor %}
     </div>
   </div>

@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<!-- Interactive Marquee Heading -->
+<!-- Header Marquee -->
 <div class="bg-dark text-white py-2 mb-4 rounded-3 shadow-sm">
     <marquee behavior="scroll" direction="left" scrollamount="6" style="font-size:1.2rem; font-weight:bold; color:#FFD700;">
         🔥 Check Out Our Trending Products! Shop Now & Get Exclusive Deals! ✨
@@ -15,22 +15,63 @@
     🔥 Trending Products
 </h2>
 
-<div class="row">
-    {% for product in products %}
-    <div class="col-md-4 mb-4">
-        <div class="card shadow border-0 rounded-4" 
-             style="overflow:hidden; height: 320px; width: 100%; max-width: 280px; margin:auto; background-color: #f9f9f9;">
-            {% if product.image %}
-                <img src="{{ product.image.url }}" 
-                     class="card-img-top rounded-top-4" 
-                     alt="{{ product.name }}" 
-                     style="height: 200px; width: 100%; object-fit: cover; border-bottom: 2px solid #eee;">
-            {% else %}
-                <img src="https://via.placeholder.com/280x200" 
-                     class="card-img-top rounded-top-4" 
-                     alt="No Image"
-                     style="height: 200px; width: 100%; object-fit: cover; border-bottom: 2px solid #eee;">
+
+<!-- ============================
+     SMALL FILTER BOX
+===============================-->
+<form method="get" class="d-flex gap-2 mb-4 justify-content-center">
+
+    <!-- Category Dropdown (Market Only) -->
+    <select name="category" class="form-select" style="max-width:180px" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+            {% if cat.type == "market" %}
+                <option value="{{ cat.id }}"
+                    {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>
+                    {{ cat.name }}
+                </option>
             {% endif %}
+        {% endfor %}
+    </select>
+
+    <!-- Sub Category Dropdown (Market Only) -->
+    <select name="subcategory" class="form-select" style="max-width:180px" onchange="this.form.submit()">
+        <option value="">All Sub Categories</option>
+        {% for sub in subcategories %}
+            {% if sub.category.type == "market" %}
+                <option value="{{ sub.id }}"
+                    {% if request.GET.subcategory == sub.id|stringformat:"s" %}selected{% endif %}>
+                    {{ sub.name }}
+                </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+</form>
+
+
+
+<!-- ============================
+     PRODUCT LIST
+===============================-->
+<div class="row justify-content-center">
+    {% for product in products %}
+    <div class="col-6 col-sm-4 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
+        <div class="card shadow border-0 rounded-4"
+             style="overflow:hidden; height: 250px; width: 100%; max-width: 280px; background-color: #f9f9f9;">
+
+            {% if product.image %}
+                <img src="{{ product.image.url }}"
+                    class="card-img-top rounded-top-4"
+                    alt="{{ product.name }}"
+                    style="height: 200px; width: 100%; object-fit: cover; border-bottom: 2px solid #eee;">
+            {% else %}
+                <img src="https://via.placeholder.com/280x200"
+                    class="card-img-top rounded-top-4"
+                    alt="No Image"
+                    style="height: 200px; width: 100%; object-fit: cover; border-bottom: 2px solid #eee;">
+            {% endif %}
+
             <div class="card-body text-center p-2">
                 <h5 class="card-title mb-1">
                     <a href="{% url 'product_detail' product.id %}" style="text-decoration:none; color:#000;">
@@ -46,7 +87,9 @@
     {% endfor %}
 </div>
 
+
 {% if products|length == 0 %}
-    <div class="text-center text-white">No products available yet.</div>
+    <div class="text-center text-muted">No products available.</div>
 {% endif %}
+
 {% endblock %}

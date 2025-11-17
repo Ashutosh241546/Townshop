@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from mamatajwells.models import Jewellery
-from market.models import Product,Profile,CartItem,Order,OrderItem
+from market.models import Product,Profile,CartItem,Order,OrderItem,Category,SubCategory
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from .forms import ProfileForm
@@ -69,13 +69,39 @@ def logout_view(request):
     return redirect('login')  # <-- yahan 'login' karo instead of 'home'
 
 @protected_view
+# def product_list(request):
+#     query = request.GET.get('q')
+#     if query:
+#         products = Product.objects.filter(name__icontains=query)
+#     else:
+#         products = Product.objects.all()
+#     return render(request, 'products.html', {'products': products})
 def product_list(request):
-    query = request.GET.get('q')
-    if query:
-        products = Product.objects.filter(name__icontains=query)
-    else:
-        products = Product.objects.all()
-    return render(request, 'products.html', {'products': products})
+    products = Product.objects.all()
+
+    # filters
+    category = request.GET.get('category')
+    subcategory = request.GET.get('subcategory')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if category:
+        products = products.filter(category_id=category)
+
+    if subcategory:
+        products = products.filter(subcategory_id=subcategory)
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    return render(request, 'products.html', {
+        'products': products,
+        'categories': Category.objects.all(),
+        'subcategories': SubCategory.objects.all(),
+    })
 
 @login_required(login_url='/login/')
 def about_view(request):
@@ -326,6 +352,10 @@ def order_history(request):
 def order_detail(request):
     pass
 
+def daily_deals(request):
+    # Example: filter only products with deals/discounts
+   # deals = Product.objects.filter(is_deal=True)
+    return render(request, 'daily_deals.html', )
 
 
 

@@ -22,6 +22,7 @@ urlpatterns = [
     path('order-history/', order_history, name='order_history'),
     path('order_detail/', order_detail, name='order_detail'),
     path('place_order/', place_order, name='place_order'),
+    path('daily-deals/', daily_deals, name='daily_deals'),
 ]
 
 
