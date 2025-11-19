@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-4">
+    <h3 class="fw-bold">Add New Product</h3>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label class="form-label">Name</label>
+        <input type="text" class="form-control mb-2" name="name">
+
+        <label class="form-label">Description</label>
+        <textarea class="form-control mb-2" name="description"></textarea>
+
+        <label class="form-label">Price</label>
+        <input type="number" class="form-control mb-2" name="price">
+
+        <!-- CATEGORY -> Subcategory Filter Section -->
+
+        <label class="form-label mt-2">Category</label>
+        <select name="category" class="form-select mb-2"
+                onchange="window.location.href='?category=' + this.value">
+            
+            <option value="">Select Category</option>
+
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" 
+                    {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                    {{ cat.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label class="form-label">Sub Category</label>
+        <select name="subcategory" class="form-select mb-2">
+            {% if subcategories %}
+                {% for sc in subcategories %}
+                    <option value="{{ sc.id }}">{{ sc.name }}</option>
+                {% endfor %}
+            {% else %}
+                <option>Select Category First</option>
+            {% endif %}
+        </select>
+
+        <label class="form-label">Image</label>
+        <input type="file" class="form-control mb-3" name="image">
+
+        <button class="btn btn-dark">Add Product</button>
+    </form>
+</div>
+
+{% endblock %}

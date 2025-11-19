@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-4">
+
+    <h3 class="fw-bold">{{ shop.shop_name }} — Dashboard</h3>
+    <p class="text-muted">Manage your products below.</p>
+
+    <a href="{% url 'vendor_add_product' %}" class="btn btn-dark btn-sm mb-3">
+        + Add New Product
+    </a>
+
+    <!-- FILTER BOX -->
+    <form method="get" class="d-flex gap-2 mb-4 justify-content-center">
+
+        <!-- Category Filter -->
+        <select name="category" class="form-select" style="max-width:180px" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}"
+                    {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>
+                    {{ cat.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <!-- Sub Category Filter -->
+        <select name="subcategory" class="form-select" style="max-width:180px" onchange="this.form.submit()">
+            <option value="">All Sub Categories</option>
+            {% for sub in subcategories %}
+                <option value="{{ sub.id }}"
+                    {% if request.GET.subcategory == sub.id|stringformat:"s" %}selected{% endif %}>
+                    {{ sub.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+    </form>
+
+    <!-- PRODUCT LIST -->
+    <div class="row">
+        {% for p in products %}
+        <div class="col-6 col-sm-4 col-md-3 mb-4">
+            <div class="card shadow-sm">
+                <img src="{{ p.image.url }}" class="card-img-top" style="height:120px;object-fit:cover;">
+                <div class="card-body p-2 text-center">
+                    <h6 class="fw-bold">{{ p.name }}</h6>
+                    <p class="text-muted small">₹{{ p.price }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted text-center">No products added yet.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

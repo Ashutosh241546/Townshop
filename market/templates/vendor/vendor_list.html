@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-4">
+
+    <h2 class="fw-bold mb-4 text-center">Our Vendors</h2>
+
+    {% if vendors %}
+    <div class="row g-4">
+
+        {% for v in vendors %}
+        <div class="col-md-4 col-lg-3">
+            <div class="card shadow-sm h-100 border-0">
+
+                <div class="card-body">
+
+                    <h5 class="card-title fw-bold">{{ v.shop_name }}</h5>
+                    
+                    <p class="card-text text-muted mb-1">
+                        <i class="fa fa-user"></i> {{ v.user.username }}
+                    </p>
+
+                    <p class="card-text">
+                        <i class="fa fa-map-marker"></i> {{ v.city }}, {{ v.pincode }}
+                    </p>
+
+                    <p class="small mb-3">{{ v.shop_address|truncatewords:12 }}</p>
+
+                    <!-- Action Buttons -->
+                    <a href="{% url 'vendor_product_list' v.id %}" class="btn btn-dark btn-sm w-100">
+    View Products
+</a>
+
+                </div>
+                
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+    <p class="text-center text-muted">No vendors found.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

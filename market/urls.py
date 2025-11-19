@@ -23,6 +23,15 @@ urlpatterns = [
     path('order_detail/', order_detail, name='order_detail'),
     path('place_order/', place_order, name='place_order'),
     path('daily-deals/', daily_deals, name='daily_deals'),
+    path("dashboard/", vendor_dashboard, name="vendor_dashboard"),
+    path("add-product/", vendor_add_product, name="vendor_add_product"),
+    path('vendor/setup/', vendor_shop_setup, name='vendor_shop_setup'),
+    path('vendor/vendor_list', vendor_list, name='vendor_list'),
+    path("vendor/products/<int:vendor_id>/", vendor_product_list, name="vendor_product_list"),
+
+
+
+
 ]
 
 

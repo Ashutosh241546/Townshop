@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-4">
+    <h3 class="fw-bold">Setup Your Shop</h3>
+    <p class="text-muted">Please complete your shop details to continue.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label class="form-label">Shop Name</label>
+        <input type="text" name="shop_name" class="form-control mb-2" required>
+
+        <label class="form-label">Address</label>
+        <textarea name="address" class="form-control mb-2" required></textarea>
+
+        <label class="form-label">City</label>
+        <input type="text" name="city" class="form-control mb-2" required>
+
+        <label class="form-label">Pincode</label>
+        <input type="text" name="pincode" class="form-control mb-2" required>
+
+        <button class="btn btn-dark mt-2">Save & Continue</button>
+    </form>
+</div>
+
+{% endblock %}

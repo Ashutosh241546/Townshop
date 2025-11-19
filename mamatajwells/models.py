@@ -39,6 +39,9 @@ from market.models import Category, SubCategory
 
 #     def __str__(self):
 #         return self.name
+
+
+
     
 class Jewellery(models.Model):
     name = models.CharField(max_length=200)
@@ -63,7 +66,7 @@ class Jewellery(models.Model):
         null=True,
         blank=True
     )
-
+   
     def __str__(self):
         return self.name
-
+   

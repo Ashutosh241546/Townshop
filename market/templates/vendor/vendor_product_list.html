@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-4">
+
+    <!-- VENDOR INFO -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Products by {{ vendor.shop_name }}</h3>
+
+        <a href="{% url 'vendor_list' %}" class="btn btn-outline-dark btn-sm">
+            ← Back to Vendors
+        </a>
+    </div>
+
+    <p class="text-muted">Vendor Address: {{ vendor.shop_address }} | Pincode: {{ vendor.pincode }}</p>
+
+    <hr>
+
+    <!-- PRODUCT GRID -->
+    <div class="row">
+        {% for p in products %}
+        <div class="col-6 col-sm-4 col-md-3 mb-4">
+            <div class="card shadow-sm h-100">
+
+                <img src="{{ p.image.url }}" class="card-img-top" 
+                     style="height:150px;object-fit:cover;border-bottom:1px solid #eee;">
+
+                <div class="card-body p-2">
+                    <h6 class="fw-bold text-center">{{ p.name }}</h6>
+
+                    <p class="text-muted small text-center mb-1">
+                        ₹{{ p.price }}
+                    </p>
+
+                    <p class="small text-center mb-0">
+                        Category: {{ p.category.name }}
+                    </p>
+                    <p class="small text-center mb-2">
+                        Subcategory: {{ p.subcategory.name }}
+                    </p>
+
+                    <a href="#" class="btn btn-dark btn-sm w-100 mt-2">View Details</a>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted text-center">This vendor has not added any products yet.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

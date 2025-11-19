@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from mamatajwells.models import Jewellery
-from market.models import Product,Profile,CartItem,Order,OrderItem,Category,SubCategory
+from market.models import Product,Profile,CartItem,Order,OrderItem,Category,SubCategory,VendorShop
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from .forms import ProfileForm
@@ -360,3 +360,136 @@ def daily_deals(request):
 
 
 
+@login_required
+def vendor_add_product(request):
+    profile = Profile.objects.get(user=request.user)
+
+    if not profile.is_vendor:
+        return redirect("home")
+
+    # Step A: Get selected category
+    selected_category = request.GET.get("category")
+
+    if selected_category:
+        subcategories = SubCategory.objects.filter(category_id=selected_category)
+    else:
+        subcategories = SubCategory.objects.none()
+
+    if request.method == "POST":
+        name = request.POST["name"]
+        description = request.POST["description"]
+        price = request.POST["price"]
+        image = request.FILES.get("image")
+        category_id = request.POST["category"]
+        subcategory_id = request.POST["subcategory"]
+
+        Product.objects.create(
+            name=name,
+            description=description,
+            price=price,
+            image=image,
+            category_id=category_id,
+            subcategory_id=subcategory_id,
+            vendor_id=request.user
+        )
+
+        return redirect("vendor_dashboard")
+
+    categories = Category.objects.filter(type="market")
+
+    return render(request, "vendor/add_product.html", {
+        "categories": categories,
+        "subcategories": subcategories,
+        "selected_category": selected_category
+    })
+
+
+
+@login_required
+def vendor_dashboard(request):
+    profile = Profile.objects.get(user=request.user)
+
+    # vendor na ho to redirect
+    if not profile.is_vendor:
+        return redirect("home")
+
+    # shop info (VendorShop me vendor field nahi tha → user se get karenge)
+    try:
+        shop = VendorShop.objects.get(user=request.user)
+    except VendorShop.DoesNotExist:
+        return redirect("vendor_shop_setup")
+
+    # FILTER INPUTS
+    category_id = request.GET.get("category")
+    subcategory_id = request.GET.get("subcategory")
+
+    # Vendor ke products (Correct field = vendor_id)
+    products = Product.objects.filter(vendor_id=request.user)
+
+    # Apply category filter
+    if category_id:
+        products = products.filter(category_id=category_id)
+
+    # Apply subcategory filter
+    if subcategory_id:
+        products = products.filter(subcategory_id=subcategory_id)
+
+    # All categories (FOR DROPDOWN)
+    categories = Category.objects.filter(type="market")
+
+    # All subcategories
+    subcategories = SubCategory.objects.all()
+
+    return render(request, "vendor/dashboard.html", {
+        "products": products,
+        "categories": categories,
+        "subcategories": subcategories,
+        "shop": shop
+    })
+
+
+@login_required
+def vendor_shop_setup(request):
+    profile = Profile.objects.get(user=request.user)
+    
+    if not profile.is_vendor:
+        return redirect("home")
+
+    # If already exists → redirect to dashboard
+    if VendorShop.objects.filter(user=request.user).exists():
+        return redirect("vendor_dashboard")
+
+    if request.method == "POST":
+        shop_name = request.POST["shop_name"]
+        address = request.POST["address"]
+        city = request.POST["city"]
+        pincode = request.POST["pincode"]
+
+        VendorShop.objects.create(
+            user=request.user,
+            shop_name=shop_name,
+            shop_address=address,
+            city=city,
+            pincode=pincode
+        )
+
+        return redirect("vendor_dashboard")
+
+    return render(request, "vendor/shop_setup.html")
+
+def vendor_list(request):
+    vendors = VendorShop.objects.all().order_by("-id")
+    return render(request, "vendor/vendor_list.html", { "vendors": vendors })
+
+
+def vendor_product_list(request, vendor_id):
+    vendor = get_object_or_404(VendorShop, id=vendor_id)
+
+    # vendor_id foreign key = User, not Vendor
+    products = Product.objects.filter(vendor_id=vendor.user)
+
+    context = {
+        "vendor": vendor,
+        "products": products
+    }
+    return render(request, "vendor/vendor_product_list.html", context)

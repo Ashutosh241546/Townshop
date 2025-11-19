@@ -30,6 +30,7 @@ class SubCategory(models.Model):
         return f"{self.name} → {self.category.name}"
  
 class Product(models.Model):
+    vendor_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -60,6 +61,8 @@ class Product(models.Model):
         related_name="products"
     )
 
+    
+
     def __str__(self):
         return self.name
 
@@ -74,6 +77,7 @@ class Profile(models.Model):
     city = models.CharField(max_length=100, blank=True)
     pincode = models.CharField(max_length=10, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)  # ✅ Add this line
+    is_vendor=models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -110,6 +114,18 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.product_name} (x{self.quantity})"
+    
+class VendorShop(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    shop_name = models.CharField(max_length=200)
+    shop_address = models.TextField()
+    city = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.shop_name
+
     
 
 
